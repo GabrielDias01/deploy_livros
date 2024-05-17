@@ -1,14 +1,17 @@
 package br.com.gabriel.lojalivro.Controller;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
 import br.com.gabriel.lojalivro.Model.Livro;
-import br.com.gabriel.lojalivro.Repository.LivroRepository;
+
 import org.springframework.web.bind.annotation.GetMapping;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 
 
 @Controller
@@ -16,17 +19,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class LivrosController {
     
     @Autowired
-    LivroRepository livrosRepository;
+    ListCrudRepository livrosRepository;
 
-    @GetMapping("/livros")
-    public List<Livro> list() {
-        return (List<Livro>) this.livrosRepository.findAll();    
+    @GetMapping("/livros-list")
+    public ModelAndView list() {
+        ModelAndView mv = new ModelAndView("/livros-list");
+        mv.addObject("livros", livrosRepository.findAll());
+        return mv ;
     }
 
-    @PostMapping("/livros")
-    public Livro create(@RequestBody Livro livro) {
-        return this.livrosRepository.save(livro);
+    @PostMapping("/livros-add")
+    public ModelAndView create(@RequestBody Livro livro) {
+        ModelAndView mv = new ModelAndView("livros-add");
+        livrosRepository.save(livro);
+        mv.setViewName("redirect:/livros-list");
+        return mv;
     }
+    
+
+
     
 
 }
